@@ -6,7 +6,7 @@
         </div>
         <br>
         <div v-if="this.listMode" class="users-list">
-            <div v-for="(user, index) in this.users[0]" :key="index">
+            <div v-for="(user, index) in this.users[0]" :key="index" style="width: 100%;">
                 <User
                     :user="user"
                     v-on:reloadUsers="reloadUsers"
@@ -130,5 +130,10 @@ export default {
     font-weight: bold;
     border-radius: 5px;
     cursor: pointer;
+}
+@media only screen and (max-width: 600px){
+    .users-list {
+        width: 100%;
+    }
 }
 </style>

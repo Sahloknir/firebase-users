@@ -1,5 +1,5 @@
 <template>
-    <div style="width: 600px;">
+    <div class="create-bloc">
         <div class="create-container grid-color">
             <div class="grid-item grid-color field-title" style="grid-area: 1 / 1 / 2 / 2;">Name</div>
             <div class="grid-item grid-color field-title" style="grid-area: 2 / 1 / 3 / 2;">Email</div>
@@ -80,13 +80,23 @@ export default {
 
 <style>
 .create-container {
-    width: 90%;
+    width: 98%;
     display: grid;
     grid-template-columns: 50% 50%;
     grid-template-rows: 40px 40px 40px 40px 40px 30px;
     border: solid 1px black;
-    margin: 40px;
+    margin: 40px 0;
     border-radius: 5px;
     overflow: hidden;
+}
+.create-bloc {
+    display: flex;
+    justify-content: center;
+    width: 600px;
+}
+@media only screen and (max-width: 600px){
+    .create-bloc {
+        width: 100%;
+    }
 }
 </style>

@@ -1,5 +1,5 @@
 <template>
-<div>
+<div class="user-bloc">
     <div v-if="!this.editMode" class="user-container">
         <div class="grid-item grid-color field-title" style="grid-area: 1 / 1 / 2 / 2;">Name</div>
         <div class="grid-item grid-color field-title" style="grid-area: 2 / 1 / 3 / 2;">Email</div>
@@ -124,12 +124,12 @@ export default {
 
 <style>
 .user-container {
-    width: 90%;
+    width: 98%;
     display: grid;
     grid-template-columns: 50% 50%;
     grid-template-rows: 40px 40px 40px 40px 30px;
     border: solid 1px black;
-    margin: 40px;
+    margin: 40px 0;
     border-radius: 5px;
     overflow: hidden;
     background-color: #2c3E50;
@@ -140,5 +140,11 @@ export default {
     align-items: center;
     border: solid 1px black;
     overflow: hidden;
+}
+.user-bloc {
+    width:100%;
+    height:100%;
+    display: flex;
+    justify-content: center;
 }
 </style>
