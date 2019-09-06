@@ -4,12 +4,15 @@ export default {
   /*
   ** Headers of the page
   */
-
+  // server: {
+  //   port: 80, // par défaut: 3000
+  //   host: '0.0.0.0', // par défaut: localhost
+  // },
   serverMiddleware: [
     { path:'/api/v1', handler: '~/serverMiddleware/api.js'}
   ],
   head: {
-    title: process.env.npm_package_name || '',
+    title: 'Users Manager',
     meta: [
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },

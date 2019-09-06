@@ -128,17 +128,16 @@ export default {
     display: grid;
     grid-template-columns: 50% 50%;
     grid-template-rows: 40px 40px 40px 40px 30px;
-    border: solid 1px black;
     margin: 40px 0;
     border-radius: 5px;
     overflow: hidden;
-    background-color: #2c3E50;
+    background-color: #eceff1;
 }
 .grid-item {
     display: flex;
     justify-content: center;
     align-items: center;
-    border: solid 1px black;
+    border: solid 1px #d8d8d8;
     overflow: hidden;
 }
 .user-bloc {

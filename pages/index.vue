@@ -1,22 +1,27 @@
 <template>
     <div class="content-container">
-        <div class="btn-mode">
+        <div class="content-container" style="position: fixed;">
+            <div class="background-bloc yellow-bloc"></div>
+            <div class="background-bloc blue-bloc"></div>
+            <img class="logo-bloc" src="../assets/firebase.svg">
+        </div>
+        <div class="content-container" style="z-index: 1;">
             <button class="mode-btn" v-if="this.listMode" @click="toggleMode()">Create User</button>
             <button class="mode-btn" v-if="!this.listMode" @click="toggleMode()">Users List</button>
-        </div>
-        <br>
-        <div v-if="this.listMode" class="users-list">
-            <div v-for="(user, index) in this.users[0]" :key="index" style="width: 100%;">
-                <User
-                    :user="user"
-                    v-on:reloadUsers="reloadUsers"
-                />
+            <br>
+            <div v-if="this.listMode" class="users-list">
+                <div v-for="(user, index) in this.users[0]" :key="index" style="width: 100%;">
+                    <User
+                        :user="user"
+                        v-on:reloadUsers="reloadUsers"
+                    />
+                </div>
             </div>
+            <CreateUser
+                v-if="!this.listMode"
+                v-on:reloadUsers="reloadUsers"
+            />
         </div>
-        <CreateUser
-            v-if="!this.listMode"
-            v-on:reloadUsers="reloadUsers"
-        />
     </div>
 </template>
 
@@ -82,7 +87,7 @@ export default {
 .grid-error {
     text-align: center;
     color: #cb2431;
-    background-color: #323c50;
+    background-color: #eceff1;
     z-index: 2;
     flex-direction: column;
 }
@@ -92,16 +97,62 @@ export default {
     cursor: pointer;
 }
 .btn-red {
-    background-color: #cb2431;
+    border-color: #ff784f;
+    background-color: #ff784f;
     color: white;
+    transition: all .2s ease-in-out;
+}
+.btn-red:hover {
+    border-color: #ee5135;
+    background-color: #ee5135;
 }
 .btn-orange {
-    background-color: #FA9C1D;
+    border-color: #ffa000;
+    background-color: #ffa000;
     color: white;
+    transition: all .2s ease-in-out;
+}
+.btn-orange:hover {
+    border-color: #f06d38;
+    background-color: #f06d38;
 }
 .btn-green {
-    background-color: green;
+    border-color: #3a943d;
+    background-color: #3a943d;
     color: white;
+    transition: all .2s ease-in-out;
+}
+.btn-green:hover {
+    border-color: green;
+    background-color: green;
+}
+button {
+    outline: none;
+}
+.logo-bloc {
+    position: fixed;
+    top: 25px;
+    left: 40px;
+    height: 100px;
+    width: auto;
+}
+.background-bloc {
+    position: fixed;
+    width: 3000px;
+    height: 2500px;
+}
+.yellow-bloc {
+    background-color: #f8c045;
+    z-index: -1;
+    transform: rotate(10deg);
+    margin-top: 500px;
+}
+.blue-bloc {
+    background-color: #379be5;
+    z-index: -2;
+    transform: rotate(55deg);
+    margin-top: -1800px;
+    margin-left: -1000px;
 }
 .pointer {
     cursor: pointer;
@@ -110,26 +161,31 @@ export default {
     font-size: 30px;
 }
 .grid-color {
-    background-color: #2c3E50;
-    color: white;
+    background-color: #eceff1;
+    color: #4a4a4a;
 }
 .field-title {
-    background-color: #2c3E50;
+    background-color: #eceff1;
     color: grey;
 }
 .grid-input {
-    border: solid 1px black;
+    border: solid 1px #d8d8d8;
     text-align: center;
     font-size: 16px;
 }
 .mode-btn {
-    padding: 8px 15px;
-    background-color: #2c3E50;
-    color: white;
     font-size: 18px;
     font-weight: bold;
-    border-radius: 5px;
+    margin-top: 50px;
+    padding: 10px 50px;
     cursor: pointer;
+    background-color: white;
+    color: #379be5;
+    border-radius: 8px;
+    cursor: pointer;
+}
+.mode-btn:hover {
+    background-color: #dcf0fb;
 }
 @media only screen and (max-width: 600px){
     .users-list {

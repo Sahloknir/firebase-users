@@ -84,7 +84,6 @@ export default {
     display: grid;
     grid-template-columns: 50% 50%;
     grid-template-rows: 40px 40px 40px 40px 40px 30px;
-    border: solid 1px black;
     margin: 40px 0;
     border-radius: 5px;
     overflow: hidden;
