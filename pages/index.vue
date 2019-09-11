@@ -1,16 +1,17 @@
 <template>
     <div class="content-container">
-        <div class="content-container" style="position: fixed;">
-            <div class="background-bloc yellow-bloc"></div>
-            <div class="background-bloc blue-bloc"></div>
-            <img class="logo-bloc" src="../assets/firebase.svg">
-        </div>
-        <div class="content-container" style="z-index: 1;">
-            <button class="mode-btn" v-if="this.listMode" @click="toggleMode()">Create User</button>
-            <button class="mode-btn" v-if="!this.listMode" @click="toggleMode()">Users List</button>
-            <br>
-            <div v-if="this.listMode" class="users-list">
-                <div v-for="(user, index) in this.users[0]" :key="index" style="width: 100%;">
+        <Background />
+        <div v-if="this.mode != 'login'" class="content-container" style="z-index: 1;">
+            <div class="features-bloc">
+                <div style="width: 45px;"></div>
+                <button class="mode-btn" v-if="this.mode == 'list'" @click="setCreateMode()">Create User</button>
+                <button class="mode-btn" v-if="this.mode == 'create'" @click="setListMode()">Users List</button>
+                <Logout
+                    v-on:userLoggedOut="userLoggedOut()"
+                />
+            </div>
+            <div v-if="this.mode == 'list'" class="users-list">
+                <div v-for="(user, index) in this.users" :key="index" style="width: 100%;">
                     <User
                         :user="user"
                         v-on:reloadUsers="reloadUsers"
@@ -18,53 +19,96 @@
                 </div>
             </div>
             <CreateUser
-                v-if="!this.listMode"
+                v-if="this.mode == 'create'"
                 v-on:reloadUsers="reloadUsers"
+            />
+        </div>
+        <div v-if="this.mode == 'login'" class="content-container" style="z-index: 1;">
+            <Login
+                v-on:userLoggedIn="userLoggedIn()"
             />
         </div>
     </div>
 </template>
 
 <script>
+import { firebaseapp } from '../plugins/firebaseapp.js'
 import User from '../components/User.vue'
 import CreateUser from '../components/CreateUser.vue'
+import Background from '../components/Background.vue'
+import Logout from '../components/Logout.vue'
+import Login from '../components/Login.vue'
 
 export default {
     data() {
         return {
-            users: [],
-            listMode: true
+            users: '',
+            currentUser: null,
+            mode: 'login'
         }
     },
     methods: {
         getUsers() {
             let res = []
-            fetch('/api/v1/adminusers')
-                .then(response => response.json())
-                .then((json) => {
-                    res.push(json)
-                    // console.log(json)
+            if (firebaseapp.auth().currentUser) {
+                firebaseapp.auth().currentUser.getIdToken(false).then((idToken) => {
+                    (async () => {
+                        const rawResponse = await fetch('/api/v1/adminusers', {
+                            method: 'POST',
+                            headers: {
+                                'Accept': 'application/json',
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify(idToken)
+                        });
+                        const content = await rawResponse.json();
+                        if (content.success != 'true') {
+                            console.log('failed fetching users')
+                        } else {
+                            for (let i = 0; i < content.content.length; i++) {
+                                res.push(content.content[i])
+                            }
+                        }
+                    })();
                 })
-                .catch((error) => {
-                    console.error(error);
-                })
-            return res;
+            } else {
+                console.log('you must be logged in')
+            }
+            return res
         },
         reloadUsers() {
             this.users = this.getUsers()
-            this.listMode = true
+            this.mode = 'list'
         },
-        toggleMode() {
-            this.listMode = !this.listMode
+        userLoggedIn() {
+            this.setListMode()
+            this.users = this.getUsers()
+        },
+        userLoggedOut() {
+            this.setLoginMode()
+            this.users = ''
+        },
+        setListMode() {
+            this.mode = 'list'
+        },
+        setCreateMode() {
+            this.mode = 'create'
+        },
+        setLoginMode() {
+            this.mode = 'login'
         }
     },
     mounted() {
+        console.log('user', firebaseapp.auth().currentUser)
         this.users = this.getUsers()
-        //console.log('on mounted', this.$store.state.users.userList);
+        this.currentUser = firebaseapp.auth().currentUser
     },
     components: {
         User,
-        CreateUser
+        CreateUser,
+        Background,
+        Logout,
+        Login
     }
 }
 </script>
@@ -77,6 +121,14 @@ export default {
     flex-direction: column;
     justify-content: flex-start;
     align-items: center;
+}
+.features-bloc {
+    margin: 50px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 98%;
+    max-width: 600px;
 }
 .users-list {
     width: 600px;
@@ -176,13 +228,13 @@ button {
 .mode-btn {
     font-size: 18px;
     font-weight: bold;
-    margin-top: 50px;
     padding: 10px 50px;
     cursor: pointer;
     background-color: white;
     color: #379be5;
     border-radius: 8px;
     cursor: pointer;
+    white-space: nowrap;
 }
 .mode-btn:hover {
     background-color: #dcf0fb;

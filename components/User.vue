@@ -29,7 +29,6 @@
         <select v-model="toUpdate.claims.status" class="grid-item grid-color grid-input" style="grid-area: 4 / 2 / 5 / 3;">
             <option selected disabled>{{user.customClaims.status}}</option>
             <option>user</option>
-            <option>moderator</option>
             <option>admin</option>
         </select>
         <div @click="toggleEdit()" class="grid-item btn-orange pointer" style="grid-area: 5 / 1 / 6 / 2;">Cancel</div>
@@ -39,11 +38,14 @@
 </template>
 
 <script>
+import { firebaseapp } from '../plugins/firebaseapp.js'
+
 export default {
     props: ['user'],
     data() {
         return {
             toUpdate: {
+                token: '',
                 uid: this.user.uid,
                 content: {
                     email: '',
@@ -54,6 +56,10 @@ export default {
                     status: ''
                 }
             },
+            toDelete: {
+                token: '',
+                uid: this.user.uid
+            },
             deleteMode: false,
             editMode: false,
             errorMode: false,
@@ -62,41 +68,61 @@ export default {
     },
     methods: {
         updateUser() {
-            (async () => {
-              const rawResponse = await fetch('/api/v1/adminusers/update', {
-                method: 'POST',
-                headers: {
-                  'Accept': 'application/json',
-                  'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(this.toUpdate)
-              });
-              const content = await rawResponse.json();
-              if (content.success != 'true') {
-                  this.setError(content.error)
-              } else {
-                  this.$emit('reloadUsers')
-              }
-            })();
-            this.toggleEdit()
+            if (firebaseapp.auth().currentUser) {
+                firebaseapp.auth().currentUser.getIdToken(false).then((idToken) => {
+                    (async () => {
+                        this.toUpdate.token = idToken
+                        const rawResponse = await fetch('/api/v1/adminusers/update', {
+                            method: 'POST',
+                            headers: {
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify(this.toUpdate)
+                        });
+                        const content = await rawResponse.json();
+                        if (content.success != 'true') {
+                            this.setError(content.error)
+                        } else {
+                            this.$emit('reloadUsers')
+                        }
+                        this.toggleEdit()
+                    })();
+                }).catch((error) => {
+                    this.setError('Unable to get user token')
+                }
+            )} else {
+                this.setError('You must be logged in to have access')
+                this.toggleEdit()
+            }
         },
         deleteUser() {
-            (async () => {
-              const rawResponse = await fetch('/api/v1/adminusers/delete', {
-                method: 'POST',
-                headers: {
-                  'Accept': 'application/json',
-                  'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(this.toUpdate.uid)
-              });
-              const content = await rawResponse.json();
-              if (content.success != 'true') {
-                  this.setError(content.error)
-              } else {
-                  this.$emit('reloadUsers')
-              }
-            })();
+            if (firebaseapp.auth().currentUser) {
+                firebaseapp.auth().currentUser.getIdToken(false).then((idToken) => {
+                    (async () => {
+                        this.toDelete.token = idToken
+                        const rawResponse = await fetch('/api/v1/adminusers/delete', {
+                            method: 'POST',
+                            headers: {
+                                'Accept': 'application/json',
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify(this.toDelete)
+                        });
+                        const content = await rawResponse.json();
+                        if (content.success != 'true') {
+                            this.setError(content.error)
+                        } else {
+                            this.$emit('reloadUsers')
+                        }
+                    })();
+                }).catch((error) => {
+                    this.setError('Unable to get user token')
+                }
+            )} else {
+                this.setError('You must be logged in to have access')
+                this.toggleEdit()
+            }
         },
         toggleEdit() {
             this.editMode = !this.editMode
