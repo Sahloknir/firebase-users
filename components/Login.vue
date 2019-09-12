@@ -39,6 +39,15 @@ export default {
             })
         }
     },
+    mounted() {
+        firebaseapp.auth().onAuthStateChanged(user => {
+            if (user) {
+                this.status = true
+            } else {
+                this.status = false
+            }
+        })
+    },
     watch: {
         status: function(value) {
             if (value) {

@@ -43,7 +43,6 @@ export default {
     data() {
         return {
             users: '',
-            currentUser: null,
             mode: 'login'
         }
     },
@@ -99,9 +98,7 @@ export default {
         }
     },
     mounted() {
-        console.log('user', firebaseapp.auth().currentUser)
         this.users = this.getUsers()
-        this.currentUser = firebaseapp.auth().currentUser
     },
     components: {
         User,
