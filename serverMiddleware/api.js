@@ -32,7 +32,7 @@ module.exports = function (req, res, next) {
                         app.auth().listUsers(1000)
                             .then(function(listUsersResult) {
                                 res.setHeader('content-type', 'application/json');
-                                res.write('{"success": "true", "content": [');
+                                res.write('{"success": "true", "status": "' + userRecord.toJSON().customClaims.status + '", "content": [');
                                 let isFirst = true
                                 listUsersResult.users.forEach(function(userRecord) {
                                     // console.log('user', userRecord.toJSON());
@@ -54,7 +54,7 @@ module.exports = function (req, res, next) {
                                 res.end();
                             });
                     } else {
-                        res.write('{"success": "true", "content": [' + JSON.stringify(userRecord.toJSON()) + ']}');
+                        res.write('{"success": "true", "status": "' + userRecord.toJSON().customClaims.status + '", "content": [' + JSON.stringify(userRecord.toJSON()) + ']}');
                         res.end();
                     }
                 })

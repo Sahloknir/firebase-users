@@ -14,7 +14,7 @@
                 <option>user</option>
                 <option>admin</option>
             </select>
-            <div @click="createUser()" class="grid-item btn-green pointer" style="grid-area: 6 / 1 / 7 / 3;">Create</div>
+            <div @click="createUser()" class="grid-item btn-green pointer" style="grid-area: 6 / 1 / 7 / 3; border: none;">Create</div>
             <div v-if="this.errorMode" class="grid-item grid-error" style="grid-area: 1 / 1 / 7 / 3;">
                 {{this.error}}
                 <span @click="closeError()" class="error-cross pointer">&times;</span>

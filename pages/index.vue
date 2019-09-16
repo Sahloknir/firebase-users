@@ -4,15 +4,21 @@
         <div v-if="this.mode != 'login'" class="content-container" style="z-index: 1;">
             <div class="features-bloc">
                 <div style="width: 45px;"></div>
-                <button class="mode-btn" v-if="this.mode == 'list'" @click="setCreateMode()">Create User</button>
-                <button class="mode-btn" v-if="this.mode == 'create'" @click="setListMode()">Users List</button>
+                <button class="mode-btn" v-if="this.mode == 'list' && this.status == 'admin'" @click="setCreateMode()">Create User</button>
+                <button class="mode-btn" v-if="this.mode == 'create' && this.status == 'admin'" @click="setListMode()">Users List</button>
                 <Logout
                     v-on:userLoggedOut="userLoggedOut()"
                 />
             </div>
             <div v-if="this.mode == 'list'" class="users-list">
                 <div v-for="(user, index) in this.users" :key="index" style="width: 100%;">
+                    <UserAdmin
+                        v-if="status == 'admin'"
+                        :user="user"
+                        v-on:reloadUsers="reloadUsers"
+                    />
                     <User
+                        v-if="status == 'user'"
                         :user="user"
                         v-on:reloadUsers="reloadUsers"
                     />
@@ -34,6 +40,7 @@
 <script>
 import { firebaseapp } from '../plugins/firebaseapp.js'
 import User from '../components/User.vue'
+import UserAdmin from '../components/UserAdmin.vue'
 import CreateUser from '../components/CreateUser.vue'
 import Background from '../components/Background.vue'
 import Logout from '../components/Logout.vue'
@@ -43,7 +50,8 @@ export default {
     data() {
         return {
             users: '',
-            mode: 'login'
+            mode: 'login',
+            status: ''
         }
     },
     methods: {
@@ -64,6 +72,7 @@ export default {
                         if (content.success != 'true') {
                             console.log('failed fetching users')
                         } else {
+                            this.status = content.status
                             for (let i = 0; i < content.content.length; i++) {
                                 res.push(content.content[i])
                             }
@@ -102,6 +111,7 @@ export default {
     },
     components: {
         User,
+        UserAdmin,
         CreateUser,
         Background,
         Logout,
@@ -111,6 +121,23 @@ export default {
 </script>
 
 <style>
+.user-wrapper {
+    width: 98%;
+    display: grid;
+    grid-template-columns: 50% 50%;
+    grid-template-rows: auto 35px;
+    margin: 40px 0;
+    border-radius: 5px;
+    overflow: hidden;
+}
+.user-container {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 50% 50%;
+    grid-auto-rows: 40px;
+    overflow: hidden;
+    background-color: #eceff1;
+}
 .content-container {
     width: 100%;
     height: 100vh;
@@ -235,6 +262,19 @@ button {
 }
 .mode-btn:hover {
     background-color: #dcf0fb;
+}
+.grid-item {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: solid 1px #d8d8d8;
+    overflow: hidden;
+}
+.user-bloc {
+    width:100%;
+    height:100%;
+    display: flex;
+    justify-content: center;
 }
 @media only screen and (max-width: 600px){
     .users-list {
