@@ -15,6 +15,7 @@ module.exports = function (req, res, next) {
     } else {
         app = admin.app()
     }
+    // let db = app.firestore();
     if (req.originalUrl == '/api/v1/adminusers') {
         let body = '';
         req.on('data', function (data) {

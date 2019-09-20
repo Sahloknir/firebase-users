@@ -5,16 +5,11 @@
                 <div class="grid-item grid-color field-title" style="grid-area: 1 / 1 / 2 / 2;">Name</div>
                 <div class="grid-item grid-color field-title" style="grid-area: 2 / 1 / 3 / 2;">Email</div>
                 <div class="grid-item grid-color field-title" style="grid-area: 3 / 1 / 4 / 2;">Phone</div>
-                <div v-if="!this.editMode" class="grid-item grid-color" style="grid-area: 1 / 2 / 2 / 3;">{{user.displayName}}</div>
-                <div v-if="!this.editMode" class="grid-item grid-color" style="grid-area: 2 / 2 / 3 / 3;">{{user.email}}</div>
-                <div v-if="!this.editMode" class="grid-item grid-color" style="grid-area: 3 / 2 / 4 / 3;">{{user.phoneNumber}}</div>
-                <input v-if="this.editMode" v-model="toUpdate.content.displayName" class="grid-item grid-color grid-input" style="grid-area: 1 / 2 / 2 / 3;"/>
-                <input v-if="this.editMode" v-model="toUpdate.content.email" class="grid-item grid-color grid-input" style="grid-area: 2 / 2 / 3 / 3;"/>
-                <input v-if="this.editMode" v-model="toUpdate.content.phoneNumber" class="grid-item grid-color grid-input" style="grid-area: 3 / 2 / 4 / 3;"/>
+                <div class="grid-item grid-color" style="grid-area: 1 / 2 / 2 / 3;">{{user.displayName}}</div>
+                <div class="grid-item grid-color" style="grid-area: 2 / 2 / 3 / 3;">{{user.email}}</div>
+                <div class="grid-item grid-color" style="grid-area: 3 / 2 / 4 / 3;">{{user.phoneNumber}}</div>
             </div>
-            <div v-if="!this.editMode" @click="toggleEdit()" class="grid-item btn-orange pointer" style="grid-area: 2 / 1 / 3 / 3; border: none;">Edit</div>
-            <div v-if="this.editMode" @click="toggleEdit()" class="grid-item btn-orange pointer" style="grid-area: 2 / 1 / 3 / 2; border: none;">Cancel</div>
-            <div v-if="this.editMode" @click="updateUser()" class="grid-item btn-green pointer" style="grid-area: 2 / 2 / 3 / 3; border: none;">Save</div>
+            <div @click="toggleEdit()" class="grid-item btn-orange pointer" style="grid-area: 2 / 1 / 3 / 3; border: none;">Edit</div>
             <div v-if="this.errorMode" class="grid-item grid-error" style="grid-area: 1 / 1 / 3 / 3;">
                 {{this.error}}
                 <span @click="closeError()" class="error-cross pointer">&times;</span>
@@ -78,13 +73,7 @@ export default {
             }
         },
         toggleEdit() {
-            this.editMode = !this.editMode
-            if (this.editMode == true) {
-                this.toUpdate.content.email = this.user.email
-                this.toUpdate.content.displayName = this.user.displayName
-                this.toUpdate.content.phoneNumber = this.user.phoneNumber
-                this.toUpdate.claims.status = this.user.customClaims.status
-            }
+            this.$emit('goToEdit')
         },
         setError(error) {
             this.error = error

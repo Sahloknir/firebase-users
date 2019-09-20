@@ -1,7 +1,7 @@
 <template>
     <div class="content-container">
         <Background />
-        <div v-if="this.mode != 'login'" class="content-container" style="z-index: 1;">
+        <div v-if="this.mode == 'create' || this.mode == 'list'" class="content-container" style="z-index: 1;">
             <div class="features-bloc">
                 <div style="width: 45px;"></div>
                 <button class="mode-btn" v-if="this.mode == 'list' && this.status == 'admin'" @click="setCreateMode()">Create User</button>
@@ -15,23 +15,38 @@
                     <UserAdmin
                         v-if="status == 'admin'"
                         :user="user"
-                        v-on:reloadUsers="reloadUsers"
+                        v-on:goToEdit="goToEdit(user)"
+                        v-on:reloadUsers="reloadUsers()"
                     />
                     <User
                         v-if="status == 'user'"
                         :user="user"
-                        v-on:reloadUsers="reloadUsers"
+                        v-on:goToEdit="goToEdit(user)"
                     />
                 </div>
             </div>
             <CreateUser
                 v-if="this.mode == 'create'"
-                v-on:reloadUsers="reloadUsers"
+                v-on:reloadUsers="reloadUsers()"
             />
         </div>
         <div v-if="this.mode == 'login'" class="content-container" style="z-index: 1;">
             <Login
                 v-on:userLoggedIn="userLoggedIn()"
+            />
+        </div>
+        <div v-if="this.mode == 'details'" class="content-container" style="z-index: 1;">
+            <div class="features-bloc">
+                <div style="width: 45px;"></div>
+                <button class="mode-btn" @click="setListMode()">Back</button>
+                <Logout
+                    v-on:userLoggedOut="userLoggedOut()"
+                />
+            </div>
+            <UserDetails
+                :user="detailedUser"
+                :status="status"
+                v-on:reloadUsers="reloadUsers()"
             />
         </div>
     </div>
@@ -41,6 +56,7 @@
 import { firebaseapp } from '../plugins/firebaseapp.js'
 import User from '../components/User.vue'
 import UserAdmin from '../components/UserAdmin.vue'
+import UserDetails from '../components/UserDetails.vue'
 import CreateUser from '../components/CreateUser.vue'
 import Background from '../components/Background.vue'
 import Logout from '../components/Logout.vue'
@@ -51,7 +67,8 @@ export default {
         return {
             users: '',
             mode: 'login',
-            status: ''
+            status: '',
+            detailedUser: ''
         }
     },
     methods: {
@@ -84,6 +101,10 @@ export default {
             }
             return res
         },
+        goToEdit(user) {
+            this.mode = 'details'
+            this.detailedUser = user
+        },
         reloadUsers() {
             this.users = this.getUsers()
             this.mode = 'list'
@@ -112,6 +133,7 @@ export default {
     components: {
         User,
         UserAdmin,
+        UserDetails,
         CreateUser,
         Background,
         Logout,
@@ -121,6 +143,11 @@ export default {
 </script>
 
 <style>
+.details-row {
+    display: grid;
+    grid-template-columns: 50% 50%;
+    grid-template-rows: 100%;
+}
 .user-wrapper {
     width: 98%;
     display: grid;
@@ -201,6 +228,16 @@ export default {
 .btn-green:hover {
     border-color: green;
     background-color: green;
+}
+.btn-blue {
+    border-color: #379be5;
+    background-color: #379be5;
+    color: white;
+    transition: all .2s ease-in-out;
+}
+.btn-blue:hover {
+    border-color: #2f8acf;
+    background-color: #2f8acf;
 }
 button {
     outline: none;
