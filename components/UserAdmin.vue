@@ -86,6 +86,17 @@ export default {
             }
         },
         deleteUser() {
+            let keys = []
+            db.collection("shops").where("email", "==", this.user.email).get().then((querySnapshot) => {
+                querySnapshot.forEach((doc) => {
+                    if (doc.exists) {
+                        keys.push(doc.id)
+                    }
+                })
+                for (let i = 0; i < keys.length; i++) {
+                    db.collection("shops").doc(keys[i]).delete()
+                }
+            })
             if (firebaseapp.auth().currentUser) {
                 firebaseapp.auth().currentUser.getIdToken(false).then((idToken) => {
                     (async () => {
@@ -102,7 +113,17 @@ export default {
                         if (content.success != 'true') {
                             this.setError(content.error)
                         } else {
-                            db.collection("shops").doc("test").delete()
+                            let keys = []
+                            db.collection("shops").where("email", "==", this.user.email).get().then((querySnapshot) => {
+                                querySnapshot.forEach((doc) => {
+                                    if (doc.exists) {
+                                        keys.push(doc.id)
+                                    }
+                                })
+                                for (let i = 0; i < keys.length; i++) {
+                                    db.collection("shops").doc(keys[i]).delete()
+                                }
+                            })
                             this.$emit('reloadUsers')
                         }
                     })();

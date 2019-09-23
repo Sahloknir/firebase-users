@@ -8,8 +8,6 @@ yarn-debug.log*
 yarn-error.log*
 
 
-plugins/firebaseapp.js
-
 
 # Runtime data
 pids

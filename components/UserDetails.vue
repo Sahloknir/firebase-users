@@ -75,28 +75,7 @@ export default {
     data() {
         return {
             myDoc: '',
-            services: [
-                {
-                    id: 'DIAGADO',
-                    name: 'Diagnostic à Domicile',
-                    value: false
-                },
-                {
-                    id: 'TINTMACHINE',
-                    name: 'Tint Machine',
-                    value: false
-                },
-                {
-                    id: 'LOXAM',
-                    name: 'Loxam',
-                    value: false
-                },
-                {
-                    id: 'DECOUPEVERREBOIS',
-                    name: 'Découpe verre & bois',
-                    value: false
-                }
-            ],
+            services: [],
             userUpdate: {
                 token: '',
                 uid: this.user.uid,
@@ -134,18 +113,27 @@ export default {
             this.vendorsLength--
         },
         mapServices() {
-            this.details.services.split(",").forEach((activeService) => {
-                this.services.forEach((service) => {
-                    if (service.id == activeService) {
-                        service.value = true
-                    }
+            if (this.details.services) {
+                this.details.services.split(",").forEach((activeService) => {
+                    this.services.forEach((service) => {
+                        if (service.id == activeService) {
+                            service.value = true
+                        }
+                    })
                 })
-            })
+            }
+        },
+        genId() {
+            let id = ''
+            for (let i = 0; i < 20; i++) {
+                id += Math.floor(Math.random() * 10).toString()
+            }
+            return id
         },
         addVendor(event) {
             event.preventDefault()
             let vendor = {
-                id: Math.floor(Math.random() * (10000000000 - 999999999) + 999999999).toString(),
+                id: this.genId(),
                 name: this.newVendor
             }
             this.details.vendors.push(vendor)
@@ -172,7 +160,6 @@ export default {
                         if (content.success != 'true') {
                             this.setError(content.error)
                         } else {
-                            console.log('updating')
                             Ref.update(toUpdate)
                             this.$emit('reloadUsers')
                         }
@@ -208,11 +195,15 @@ export default {
                 vendors.push(newVendor)
             })
             toUpdate.vendors = vendors
-            var Ref = db.collection("shops").doc(this.myDoc)
-            this.userUpdate.content.email = toUpdate['email']
-            this.userUpdate.content.phoneNumber = toUpdate['tel']
-            this.userUpdate.content.displayName = toUpdate['name']
-            this.updateUser(Ref, toUpdate)
+            if (this.myDoc) {
+                var Ref = db.collection("shops").doc(this.myDoc)
+                this.userUpdate.content.email = toUpdate['email']
+                this.userUpdate.content.phoneNumber = toUpdate['tel']
+                this.userUpdate.content.displayName = toUpdate['name']
+                this.updateUser(Ref, toUpdate)
+            } else {
+                this.setError("cannot find user data")
+            }
         },
         closeError() {
             this.error = ''
@@ -243,12 +234,28 @@ export default {
                         index++
                     })
                     this.details.services = doc.data().services_available
-                    this.mapServices()
                     doc.data().vendors.forEach((vendor) => {
                         this.details.vendors.push(vendor)
                         this.deleteMode.push(false)
                     })
+                } else {
+                    this.setError('cannot find user data')
                 }
+            })
+        })
+        db.collection("services_categories").get().then((querySnapshot) => {
+            querySnapshot.forEach((doc) => {
+                // console.log(doc.id, " => ", doc.data().services)
+                doc.data().services.forEach((service) => {
+                    let elem = {
+                        id: service.code,
+                        name: service.name,
+                        value: false
+                    }
+                    // console.log("service ", elem)
+                    this.services.push(elem)
+                })
+                this.mapServices()
             })
         })
     }
@@ -290,7 +297,7 @@ export default {
     display: grid;
     grid-template-columns: 100%;
     grid-auto-rows: 40px;
-    margin: 40px 0;
+    margin: 40px 1%;
     border-radius: 5px;
     overflow: hidden;
 }

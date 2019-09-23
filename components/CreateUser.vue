@@ -6,6 +6,10 @@
                 <input class="details-item grid-input grid-color" v-model="toCreate[field]">
             </div>
             <div class="details-row">
+                <div class="details-item field-title">id</div>
+                <input type="text" class="details-item grid-input grid-color" v-model="docId">
+            </div>
+            <div class="details-row">
                 <div class="details-item field-title">password</div>
                 <input type="password" class="details-item grid-input grid-color" v-model="secretFields.password">
             </div>
@@ -64,6 +68,7 @@ export default {
                 confPassword: '',
                 status: ''
             },
+            docId: '',
             fields: [],
             errorMode: false,
             error: ''
@@ -99,17 +104,23 @@ export default {
             }
         },
         createContent() {
-            var Ref = db.collection("shops").doc('test')
-            this.userCreate.content.displayName = this.toCreate['name']
-            this.userCreate.content.email = this.toCreate['email']
-            this.userCreate.content.phoneNumber = this.toCreate['tel']
-            this.userCreate.claims.status = this.secretFields.status
-            if (this.secretFields.password == this.secretFields.confPassword) {
-                this.userCreate.content.password = this.secretFields.password
-                this.createUser(Ref)
-            } else {
-                this.setError('Passwords don\'t match')
-            }
+            var Ref = db.collection("shops").doc(this.docId)
+            Ref.get().then((doc) => {
+                if (doc.exists) {
+                    this.setError('this id is already in use')
+                } else {
+                    this.userCreate.content.displayName = this.toCreate['name']
+                    this.userCreate.content.email = this.toCreate['email']
+                    this.userCreate.content.phoneNumber = this.toCreate['tel']
+                    this.userCreate.claims.status = this.secretFields.status
+                    if (this.secretFields.password == this.secretFields.confPassword) {
+                        this.userCreate.content.password = this.secretFields.password
+                        this.createUser(Ref)
+                    } else {
+                        this.setError('Passwords don\'t match')
+                    }
+                }
+            })
         },
         setError(error) {
             this.error = error
@@ -133,7 +144,7 @@ export default {
     display: grid;
     grid-template-columns: 100%;
     grid-auto-rows: 40px;
-    margin: 40px 0;
+    margin: 40px 1%;
     border-radius: 5px;
     overflow: hidden;
 }
