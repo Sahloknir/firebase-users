@@ -83,4 +83,9 @@ export default {
     max-width: 400px;
     font-size: 20px;
 }
+@media only screen and (max-width: 600px){
+    .login-input {
+        width: 80%;
+    }
+}
 </style>
